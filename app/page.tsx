@@ -15,7 +15,7 @@ export default function Page() {
         <a href="https://nextjs.org/learn/" className="text-blue-500">
           Next.js Learn Course
         </a>
-        , brought to you by Vercel.
+        , brought to you by Vercel. V.0.0.1
       </p>
 
       <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
