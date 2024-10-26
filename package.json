@@ -1,13 +1,15 @@
 {
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "prisma generate && next build",
     "dev": "next dev",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.4",
+    "@prisma/client": "5.21.1",
     "@tailwindcss/forms": "^0.5.7",
     "@vercel/postgres": "^0.8.0",
     "autoprefixer": "10.4.19",
@@ -29,7 +31,8 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "eslint": "^8",
-    "eslint-config-next": "14.2.15"
+    "eslint-config-next": "14.2.15",
+    "prisma": "^5.21.1"
   },
   "engines": {
     "node": ">=20.12.0"

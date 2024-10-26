@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
-import { updateInvoice, State } from '@/app/lib/actions';
+import { updateInvoice, State } from '@/app/lib/actions/invoice-actions';
 import { useActionState } from 'react';
 
 export default function EditInvoiceForm({
@@ -26,7 +26,7 @@ export default function EditInvoiceForm({
   return (
     <form action={formAction}>
       <input type="hidden" name="id" value={invoice.id} />
-      
+
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

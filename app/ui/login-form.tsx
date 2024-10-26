@@ -9,7 +9,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
+import { authenticate } from '@/app/lib/actions/auth-actions';
 
 export default function LoginForm() {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -67,7 +67,7 @@ export default function LoginForm() {
         <Button className="mt-4 w-full" aria-disabled={isPending}>
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </Button>
-        
+
         <div
           className="flex h-8 items-end space-x-1"
           aria-live="polite"

@@ -80,9 +80,25 @@ export type CustomerField = {
   name: string;
 };
 
+export type CustomerForm = {
+  id: string;
+  name: string;
+  email: string;
+  image_url: string;
+};
+
 export type InvoiceForm = {
   id: string;
   customer_id: string;
   amount: number;
-  status: 'pending' | 'paid';
+  status: string;//'pending' | 'paid';
 };
+
+export const Avatares: string[] = [
+  "/customers/evil-rabbit.png",
+  "/customers/delba-de-oliveira.png",
+  "/customers/lee-robinson.png",
+  "/customers/michael-novotny.png",
+  "/customers/amy-burns.png",
+  "/customers/balazs-orban.png",
+]
