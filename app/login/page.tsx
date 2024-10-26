@@ -1,7 +1,8 @@
 import AcmeLogo from '@/app/ui/acme-logo';
 import LoginForm from '@/app/ui/login-form';
+import LoginFormGitHub from '@/app/ui/login-form-github';
 import { Metadata } from 'next';
- 
+
 export default function LoginPage() {
   return (
     <main className="flex items-center justify-center md:h-screen">
@@ -12,6 +13,7 @@ export default function LoginPage() {
           </div>
         </div>
         <LoginForm />
+        <LoginFormGitHub />
       </div>
     </main>
   );
