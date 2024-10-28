@@ -108,3 +108,29 @@ model Revenue {
 
     @@map(name: "revenues")
 }
+
+model Lead {
+    id                     String   @id @default(cuid())
+    firstName              String
+    lastName               String
+    email                  String
+    phone                  String
+    //status  String
+    //leadSource  String
+    //company     String
+    //position    String
+    //industry    String
+    estimatedBudget        BigInt
+    notes                  String
+    leadScore              Int
+    lastContactDate        DateTime
+    nextFollowUpDate       DateTime
+    preferredContactMethod String
+    assignedTo             String
+    //campaign    String    
+
+    createdAt DateTime @default(now()) @map(name: "created_at")
+    updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+    @@map(name: "leads")
+}

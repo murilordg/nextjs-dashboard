@@ -94,6 +94,19 @@ export type InvoiceForm = {
   status: string;//'pending' | 'paid';
 };
 
+export type Lead = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  estimatedBudget: number;
+  notes: string;
+  leadScore: number;
+  lastContactDate: Date;
+  nextFollowUpDate: Date;
+  preferredContactMethod: string;
+}
+
 export const Avatares: string[] = [
   "/customers/evil-rabbit.png",
   "/customers/delba-de-oliveira.png",

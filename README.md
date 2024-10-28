@@ -5,6 +5,17 @@ This is the starter template for the Next.js App Router Course. It contains the 
 For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
 
 
+## Commands
+
+```sh
+pnpm run dev
+
+npx prisma generate
+npx prisma db push
+
+npx shadcn@latest add {ompontne}
+```
+
 ## Links
 
 https://nextjs.org/learn/dashboard-app/adding-authentication
