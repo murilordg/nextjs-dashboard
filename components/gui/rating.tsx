@@ -93,16 +93,36 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
         showedRating % 1 > 0 ? (
             <PartialStar
                 fillPercentage={showedRating % 1}
+                fillSpirit={rating > showedRating}
                 size={size}
                 className={cn(ratingVariants[variant].star)}
+                classNameSpirit={cn(ratingVariants[variant].emptyStar)}
                 Icon={Icon}
                 onMouseMove={(e: any) => handleStarMouseMove((fullStars + 1), e)}
                 onMouseLeave={() => setRating(originalRating)}
                 onClick={(e: any) => handleStarClick((fullStars + 1), e)}
             />
-        ) : null
-    const firstEmptyStar = (fullStars + (partialStar ? 1 : 0));
-    const totalEmptyStar = (totalStars - fullStars - (partialStar ? 1 : 0));
+        ) : null;
+
+    const firstSpiritStar = (fullStars + (partialStar ? 1 : 0));
+    const totalSpiritStar = Math.max(0, Math.floor(rating) - firstSpiritStar);
+
+    const partialSpiritStar =
+        ((rating > showedRating) && (rating % 1 > 0)) ? (
+            <PartialStar
+                fillPercentage={rating % 1}
+                fillSpirit={false}
+                size={size}
+                className={cn(ratingVariants[variant].emptyStar)}
+                Icon={Icon}
+                onMouseMove={(e: any) => handleStarMouseMove((firstSpiritStar + totalSpiritStar + 1), e)}
+                onMouseLeave={() => setRating(originalRating)}
+                onClick={(e: any) => handleStarClick((firstSpiritStar + totalSpiritStar + 1), e)}
+            />
+        ) : null;
+
+    const firstEmptyStar = (firstSpiritStar + (partialSpiritStar ? 1 : 0) + totalSpiritStar);
+    const totalEmptyStar = (totalStars - firstEmptyStar);
 
     return (
         <div
@@ -124,10 +144,23 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                 })
             )}
             {partialStar}
-            {[...Array(totalEmptyStar)].map((_, i) => {
+            {[...Array(totalSpiritStar)].map((_, i) => {
                 return (
                     React.cloneElement(Icon, {
                         key: i + fullStars + 1,
+                        size,
+                        className: cn("fill-current", ratingVariants[variant].emptyStar),
+                        onMouseMove: (e: any) => handleStarMouseMove((i + firstSpiritStar + 1), e),
+                        onClick: (e: any) => handleStarClick((i + firstSpiritStar + 1), e),
+                    })
+                );
+            }
+            )}
+            {partialSpiritStar}
+            {[...Array(totalEmptyStar)].map((_, i) => {
+                return (
+                    React.cloneElement(Icon, {
+                        key: i + fullStars + totalSpiritStar + 1,
                         size,
                         className: cn(ratingVariants[variant].emptyStar),
                         onMouseMove: (e: any) => handleStarMouseMove((i + firstEmptyStar + 1), e),
@@ -142,15 +175,17 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
 
 interface PartialStarProps {
     fillPercentage: number
+    fillSpirit: boolean
     size: number
     className?: string
+    classNameSpirit?: string
     Icon: React.ReactElement
     onMouseMove: (e: any) => void
     onMouseLeave: () => void
     onClick: (e: any) => void
 }
 const PartialStar = ({ ...props }: PartialStarProps) => {
-    const { fillPercentage, size, className, Icon, onMouseMove, onMouseLeave, onClick } = props
+    const { fillPercentage, fillSpirit, size, className, classNameSpirit, Icon, onMouseMove, onMouseLeave, onClick } = props
 
     return (
         <div
@@ -161,7 +196,7 @@ const PartialStar = ({ ...props }: PartialStarProps) => {
         >
             {React.cloneElement(Icon, {
                 size,
-                className: cn("fill-transparent", className),
+                className: fillSpirit ? cn("fill-current", classNameSpirit) : cn("fill-transparent", className),
             })}
             <div
                 style={{
