@@ -15,7 +15,6 @@ export function PhoneInput({
 
     const phoneMask = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target
-        console.log(name, value);
 
         const newValue = normalizePhoneNumber(value);
 

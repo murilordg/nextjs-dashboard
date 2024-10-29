@@ -20,6 +20,9 @@ import { cn } from "@/lib/utils"
 import { Ratings } from "@/components/gui/rating"
 import ContactMethodFormItem from "@/components/gui/contact-method-formitem"
 import { PhoneInput } from "@/components/gui/phone-input"
+import { TagInput } from "@/components/gui/tag-input"
+import { SelectTagInput } from "@/components/gui/select-tag-input"
+import { useState } from "react"
 
 const phoneRegex = /^\(\d{2}\) \d{5}(?:-\d{4})?$/
 const phoneSchema = z
@@ -36,12 +39,15 @@ const formSchema = z.object({
     email: z.string().email().optional(),
     phone: phoneSchema,
     notes: z.string().optional(),
-    leadScore: z.string(),
+    leadScore: z.number().optional(),
     preferredContactMethod: z.string().optional(),
+    tags: z.string().optional(), // z.array(z.string()).optional(),
+    tags2: z.array(z.string()).optional(),
 })
 
 
 export default function CreateForm() {
+    const [tags, setTags] = useState<string[]>([]);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -50,8 +56,10 @@ export default function CreateForm() {
             email: '',
             phone: '',
             notes: '',
-            leadScore: '2.5',
+            leadScore: 2.5,
             preferredContactMethod: '',
+            tags: '',
+            tags2: [],
         }
     });
 
@@ -162,7 +170,41 @@ export default function CreateForm() {
                             <ContactMethodFormItem onChange={field.onChange} value={field.value} />
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                            <TagInput onChange={field.onChange} value={field.value} />
+                        )}
+                    />
                 </div>
+
+
+                <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Approvable Users</FormLabel>
+                            <FormControl>
+                                <SelectTagInput
+                                    {...field}
+                                    value={tags}
+                                    onChange={setTags}
+                                    options={[
+                                        { label: 'JavaScript', value: 'js' },
+                                        { label: 'TypeScript', value: 'ts' },
+                                        { label: 'React', value: 'react' },
+                                        { label: 'Node.js', value: 'node' },
+                                        { label: 'GraphQL', value: 'graphql' },
+                                    ]}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
                 <Button type="submit">Submit</Button>
             </form>

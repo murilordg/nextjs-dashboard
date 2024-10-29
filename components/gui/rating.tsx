@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { type InputProps } from '@/components/ui/input';
 
 const ratingVariants = {
     default: {
@@ -17,14 +18,24 @@ const ratingVariants = {
     },
 };
 
-export interface RatingsProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// export interface RatingsProps extends React.InputHTMLAttributes<HTMLInputElement> {
+//     totalStars?: number;
+//     size?: number;
+//     fill?: boolean;
+//     Icon?: React.ReactElement;
+//     variant?: keyof typeof ratingVariants;
+//     changeOnMove?: boolean;
+// }
+type RatingsProps = Omit<InputProps, 'value' | 'onChange'> & {
+    value: number | undefined;
+    onChange: React.Dispatch<React.SetStateAction<number>>;
     totalStars?: number;
     size?: number;
     fill?: boolean;
     Icon?: React.ReactElement;
     variant?: keyof typeof ratingVariants;
     changeOnMove?: boolean;
-}
+};
 
 const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
     totalStars = 5,
@@ -33,22 +44,25 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
     Icon = <Star />,
     variant = "default",
     changeOnMove = false,
+    value,
+    onChange,
     ...props
 }, ref) => {
-    const [rating, setRating] = React.useState(props.value ? Number(props.value) : 0);
+    const originalRating = value ?? 0;
+    const [rating, setRating] = React.useState(originalRating);
 
     React.useEffect(() => {
         if (changeOnMove) emitOnChangeEvent(rating);
     }, [rating, changeOnMove]);
 
-    const emitOnChangeEvent = (newRating: number) => {
-        if (newRating === Number(props.value)) return;
+    const emitOnChangeEvent = React.useCallback(
+        (newRating: number) => {
+            if (newRating === value) return;
 
-        const event = {
-            target: { value: newRating.toString() },
-        } as React.ChangeEvent<HTMLInputElement>;
-        props.onChange!(event);
-    }
+            onChange?.(newRating);
+        },
+        [onChange, value],
+    );
 
     const calculateRating = (selectedRating: number, e: any): number => {
         if (e === null) return selectedRating;
@@ -73,7 +87,6 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
         if (newRating !== rating) setRating(newRating);
     }
 
-    const originalRating = props.value ? Number(props.value) : 0;
     const showedRating = changeOnMove ? rating : originalRating;
     const fullStars = Math.floor(showedRating)
     const partialStar =
