@@ -7,9 +7,7 @@ import { useFormContext } from "react-hook-form";
 import { cn, normalizePhoneNumber } from "@/lib/utils";
 
 export function PhoneInput({
-    field
-}: {
-    field: any
+    ...props
 }) {
     const { setValue } = useFormContext()
 
@@ -24,7 +22,7 @@ export function PhoneInput({
     return (
         <FormControl onChange={phoneMask}>
             <div className={cn("flex items-center gap-2")}>
-                <Input placeholder="phone ..." {...field} />
+                <Input placeholder="phone ..." {...props} />
             </div>
         </FormControl>
     )

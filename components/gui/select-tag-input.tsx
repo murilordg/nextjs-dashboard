@@ -4,7 +4,6 @@ import * as React from 'react';
 import { XIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { type InputProps } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 type Option = {
@@ -12,7 +11,7 @@ type Option = {
   value: string;
 };
 
-type SelectTagInputProps = Omit<InputProps, 'value' | 'onChange'> & {
+type SelectTagInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> & {
   value: string[];
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
   options: Option[];

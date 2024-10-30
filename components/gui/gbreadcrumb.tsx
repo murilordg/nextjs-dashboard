@@ -38,8 +38,8 @@ export const GBreadCrumb = ({
                                 <span className="sr-only">Toggle menu</span>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                                {breadcrumbs.slice(1, -2).map((breadcrumb) => (
-                                    <DropdownMenuItem>
+                                {breadcrumbs.slice(1, -2).map((breadcrumb, idx) => (
+                                    <DropdownMenuItem key={idx}>
                                         <BreadcrumbLink href={breadcrumb.href}>{breadcrumb.label}</BreadcrumbLink>
                                     </DropdownMenuItem>
                                 ))}

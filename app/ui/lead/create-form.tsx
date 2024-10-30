@@ -23,6 +23,7 @@ import { PhoneInput } from "@/components/gui/phone-input"
 import { TagInput } from "@/components/gui/tag-input"
 import { SelectTagInput } from "@/components/gui/select-tag-input"
 import { useState } from "react"
+import { TagsField } from "@/components/gui/tags-field"
 
 const phoneRegex = /^\(\d{2}\) \d{5}(?:-\d{4})?$/
 const phoneSchema = z
@@ -41,9 +42,8 @@ const formSchema = z.object({
     notes: z.string().optional(),
     leadScore: z.number().optional(),
     preferredContactMethod: z.string().optional(),
-    tags: z.string().optional(), // z.array(z.string()).optional(),
-    tags2: z.array(z.string()).optional(),
-})
+    tags: z.array(z.string()).optional(),
+});
 
 
 export default function CreateForm() {
@@ -58,8 +58,7 @@ export default function CreateForm() {
             notes: '',
             leadScore: 2.5,
             preferredContactMethod: '',
-            tags: '',
-            tags2: [],
+            tags: ["cm2v63ipy0000zvwhu7209c9h", "cm2v8x9030002r9g3taypixkh", "cm2v87d9h0000r9g37xceyk3i"],
         }
     });
 
@@ -128,7 +127,7 @@ export default function CreateForm() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>phone</FormLabel>
-                                <PhoneInput field={field} />
+                                <PhoneInput {...field} />
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -175,36 +174,16 @@ export default function CreateForm() {
                         control={form.control}
                         name="tags"
                         render={({ field }) => (
-                            <TagInput onChange={field.onChange} value={field.value} />
+                            <FormItem>
+                                <FormLabel>Tags</FormLabel>
+                                <FormControl>
+                                    <TagsField {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
                     />
                 </div>
-
-
-                <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Approvable Users</FormLabel>
-                            <FormControl>
-                                <SelectTagInput
-                                    {...field}
-                                    value={tags}
-                                    onChange={setTags}
-                                    options={[
-                                        { label: 'JavaScript', value: 'js' },
-                                        { label: 'TypeScript', value: 'ts' },
-                                        { label: 'React', value: 'react' },
-                                        { label: 'Node.js', value: 'node' },
-                                        { label: 'GraphQL', value: 'graphql' },
-                                    ]}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
                 <Button type="submit">Submit</Button>
             </form>

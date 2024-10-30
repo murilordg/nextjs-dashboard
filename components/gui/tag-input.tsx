@@ -1,12 +1,11 @@
 import * as React from "react";
-import { TextareaProps } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
 import { ChevronUpIcon, EditIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { tagStringToArray } from "./tag-string-to-array";
 
-export interface TagInputProps extends TextareaProps { }
+type TagInputProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>
 
 export const TagInput = React.forwardRef<HTMLTextAreaElement, TagInputProps>(
     ({ defaultValue, children, onChange, className, value, ...props }, ref) => {

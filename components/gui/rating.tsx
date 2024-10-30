@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { type InputProps } from '@/components/ui/input';
+
+type Rect = { left: number; width: number; };
+type InputEvent = { currentTarget: { getBoundingClientRect: () => Rect; }; clientX: number; } | null;
 
 const ratingVariants = {
     default: {
@@ -26,7 +28,7 @@ const ratingVariants = {
 //     variant?: keyof typeof ratingVariants;
 //     changeOnMove?: boolean;
 // }
-type RatingsProps = Omit<InputProps, 'value' | 'onChange'> & {
+type RatingsProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> & {
     value: number | undefined;
     onChange: React.Dispatch<React.SetStateAction<number>>;
     totalStars?: number;
@@ -52,19 +54,16 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
     const [rating, setRating] = React.useState(originalRating);
 
     React.useEffect(() => {
-        if (changeOnMove) emitOnChangeEvent(rating);
+        if (changeOnMove) if (rating === value) onChange?.(rating);
     }, [rating, changeOnMove]);
 
-    const emitOnChangeEvent = React.useCallback(
-        (newRating: number) => {
-            if (newRating === value) return;
+    const emitOnChangeEvent = React.useCallback((newRating: number) => {
+        if (newRating === value) return;
+        onChange?.(newRating);
 
-            onChange?.(newRating);
-        },
-        [onChange, value],
-    );
+    }, [onChange, value],);
 
-    const calculateRating = (selectedRating: number, e: any): number => {
+    const calculateRating = (selectedRating: number, e: InputEvent): number => {
         if (e === null) return selectedRating;
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -76,13 +75,13 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
         else return (selectedRating - 1);
     }
 
-    const handleStarClick = (selectedRating: number, e: any) => {
+    const handleStarClick = (selectedRating: number, e: InputEvent) => {
         const newRating = calculateRating(selectedRating, e);
         emitOnChangeEvent(newRating);
         if (newRating !== rating) setRating(newRating);
     };
 
-    const handleStarMouseMove = (selectedRating: number, e: any) => {
+    const handleStarMouseMove = (selectedRating: number, e: InputEvent) => {
         const newRating = calculateRating(selectedRating, e);
         if (newRating !== rating) setRating(newRating);
     }
@@ -98,9 +97,9 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                 className={cn(ratingVariants[variant].star)}
                 classNameSpirit={cn(ratingVariants[variant].emptyStar)}
                 Icon={Icon}
-                onMouseMove={(e: any) => handleStarMouseMove((fullStars + 1), e)}
+                onMouseMove={(e: InputEvent) => handleStarMouseMove((fullStars + 1), e)}
                 onMouseLeave={() => setRating(originalRating)}
-                onClick={(e: any) => handleStarClick((fullStars + 1), e)}
+                onClick={(e: InputEvent) => handleStarClick((fullStars + 1), e)}
             />
         ) : null;
 
@@ -115,9 +114,9 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                 size={size}
                 className={cn(ratingVariants[variant].emptyStar)}
                 Icon={Icon}
-                onMouseMove={(e: any) => handleStarMouseMove((firstSpiritStar + totalSpiritStar + 1), e)}
+                onMouseMove={(e: InputEvent) => handleStarMouseMove((firstSpiritStar + totalSpiritStar + 1), e)}
                 onMouseLeave={() => setRating(originalRating)}
-                onClick={(e: any) => handleStarClick((firstSpiritStar + totalSpiritStar + 1), e)}
+                onClick={(e: InputEvent) => handleStarClick((firstSpiritStar + totalSpiritStar + 1), e)}
             />
         ) : null;
 
@@ -139,8 +138,8 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                         fill ? "fill-current" : "fill-transparent",
                         ratingVariants[variant].star
                     ),
-                    onMouseMove: (e: any) => handleStarMouseMove((i + 1), e),
-                    onClick: (e: any) => handleStarClick((i + 1), e),
+                    onMouseMove: (e: InputEvent) => handleStarMouseMove((i + 1), e),
+                    onClick: (e: InputEvent) => handleStarClick((i + 1), e),
                 })
             )}
             {partialStar}
@@ -150,8 +149,8 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                         key: i + fullStars + 1,
                         size,
                         className: cn("fill-current", ratingVariants[variant].emptyStar),
-                        onMouseMove: (e: any) => handleStarMouseMove((i + firstSpiritStar + 1), e),
-                        onClick: (e: any) => handleStarClick((i + firstSpiritStar + 1), e),
+                        onMouseMove: (e: InputEvent) => handleStarMouseMove((i + firstSpiritStar + 1), e),
+                        onClick: (e: InputEvent) => handleStarClick((i + firstSpiritStar + 1), e),
                     })
                 );
             }
@@ -163,8 +162,8 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
                         key: i + fullStars + totalSpiritStar + 1,
                         size,
                         className: cn(ratingVariants[variant].emptyStar),
-                        onMouseMove: (e: any) => handleStarMouseMove((i + firstEmptyStar + 1), e),
-                        onClick: (e: any) => handleStarClick((i + firstEmptyStar + 1), e),
+                        onMouseMove: (e: InputEvent) => handleStarMouseMove((i + firstEmptyStar + 1), e),
+                        onClick: (e: InputEvent) => handleStarClick((i + firstEmptyStar + 1), e),
                     })
                 );
             }
@@ -180,9 +179,9 @@ interface PartialStarProps {
     className?: string
     classNameSpirit?: string
     Icon: React.ReactElement
-    onMouseMove: (e: any) => void
+    onMouseMove: (e: InputEvent) => void
     onMouseLeave: () => void
-    onClick: (e: any) => void
+    onClick: (e: InputEvent) => void
 }
 const PartialStar = ({ ...props }: PartialStarProps) => {
     const { fillPercentage, fillSpirit, size, className, classNameSpirit, Icon, onMouseMove, onMouseLeave, onClick } = props
