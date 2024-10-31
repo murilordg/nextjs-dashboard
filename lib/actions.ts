@@ -29,10 +29,10 @@ export async function updateTag(tagData: TagUpdate) {
     }
 }
 
-export async function deleteTag(tagData: Tag) {
+export async function deleteTag(tagId: string) {
     try {
         await prisma.tag.delete({
-            where: { id: tagData.id },
+            where: { id: tagId },
         });
 
     } catch (error) {
@@ -42,7 +42,9 @@ export async function deleteTag(tagData: Tag) {
 
 export async function fetchTags(): Promise<Tag[]> {
     try {
-        const tags = await prisma.tag.findMany();
+        const tags = await prisma.tag.findMany({
+            orderBy: { name: 'asc' },
+        });
 
         return tags;
 

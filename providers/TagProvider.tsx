@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { fetchTags, updateTag } from '@/lib/actions';
-import { GeneralTagData, GeneralTagDataCreate, GeneralTagDataUpdate } from '@/lib/definitions';
+import { deleteTag, fetchTags, updateTag } from '@/lib/actions';
+import { GeneralTagData } from '@/lib/definitions';
 import { createTag } from "@/lib/actions"
 
 const GeneralTagsContext = createContext([] as any);
@@ -25,29 +25,39 @@ export const GeneralTagsProvider = ({ children }: { children: React.ReactNode })
     fetchData();
   }, []);
 
-  const createGeneralTag = async (tag: GeneralTagDataCreate) => {
+  const createGeneralTag = async (tag: GeneralTagData) => {
+    setGeneralTags((prev) => {
+      return [...prev, { ...tag }].toSorted((a, b) => a.name.localeCompare(b.name));
+    });
 
     var newTag = await createTag(tag);
     if (newTag === undefined) throw new Error('Database Error: Failed to Create Tag.');
 
-    setGeneralTags((prev) => {
-      return [...prev, { ...tag, id: newTag!.id }];
-    });
   };
 
-  const updateGeneralTag = async (tag: GeneralTagDataUpdate) => {
+  const updateGeneralTag = async (tag: GeneralTagData) => {
+
+    setGeneralTags((prev) => {
+      return prev.map((t: any) => (t.id === tag.id ? tag : t)).toSorted((a, b) => a.name.localeCompare(b.name));
+    });
 
     var newTag = await updateTag(tag);
     if (!newTag) throw new Error('Database Error: Failed to Create Tag.');
 
+  }
+
+  const deleteGeneralTag = async (tagId: string) => {
+
     setGeneralTags((prev) => {
-      prev = prev.filter((t: any) => t.id !== tag.id);
-      return [...prev, tag];
+      return prev.filter((t: any) => t.id !== tagId);
     });
+
+    await deleteTag(tagId);
+
   }
 
   return (
-    <GeneralTagsContext.Provider value={{ generalTags, setGeneralTags, createGeneralTag, updateGeneralTag }}>
+    <GeneralTagsContext.Provider value={{ generalTags, createGeneralTag, updateGeneralTag, deleteGeneralTag }}>
       {children}
     </GeneralTagsContext.Provider>
   );
