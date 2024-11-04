@@ -53,9 +53,9 @@ const Ratings = React.forwardRef<HTMLInputElement, RatingsProps>(({
     const originalRating = value ?? 0;
     const [rating, setRating] = React.useState(originalRating);
 
-    React.useEffect(() => {
-        if (changeOnMove) if (rating === value) onChange?.(rating);
-    }, [rating, changeOnMove]);
+    // React.useEffect(() => {
+    //     if (changeOnMove) if (rating !== value) onChange?.(rating);
+    // }, [rating, changeOnMove, value, onChange]);
 
     const emitOnChangeEvent = React.useCallback((newRating: number) => {
         if (newRating === value) return;

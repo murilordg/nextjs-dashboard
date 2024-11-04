@@ -122,13 +122,13 @@ function SelectTags({
         } else {
             setSearchedTags(tags);
         }
-    }, [tags]);
+    }, [tags, searchTag]);
 
     const handleSearch = useDebouncedCallback((searchTag) => {
         setSearchTag(searchTag);
-        setSearchedTags(
-            tags.filter((tag) => tag.name.toLowerCase().includes(searchTag.toLowerCase()))
-        );
+        // setSearchedTags(
+        //     tags.filter((tag) => tag.name.toLowerCase().includes(searchTag.toLowerCase()))
+        // );
     }, 300);
 
     const handleCheckUncheckTag = (tagId: string, checked: boolean) => {
@@ -188,8 +188,8 @@ function SelectTags({
             </div>
 
             <DialogFooter className="flex">
-                <Button type="button" variant="outline" onClick={onClose}>Close</Button>
                 <Button type="submit" onClick={handleCreateTag}>Create Tag</Button>
+                <Button type="button" variant="outline" onClick={onClose}>Close</Button>
             </DialogFooter>
         </>
     );

@@ -14,16 +14,21 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
+import { useToast } from "@/hooks/use-toast"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { Ratings } from "@/components/gui/rating"
-import ContactMethodFormItem from "@/components/gui/contact-method-formitem"
+import { SelectStatic } from "@/components/gui/select-static"
 import { PhoneInput } from "@/components/gui/phone-input"
-import { TagInput } from "@/components/gui/tag-input"
-import { SelectTagInput } from "@/components/gui/select-tag-input"
-import { useState } from "react"
 import { TagsField } from "@/components/gui/tags-field"
+import { SelectDynamic } from "@/components/gui/select-dynamic"
+import { SelectOption } from "@/components/gui/definitions";
+import { useLeadDialog } from '@/hooks/use-lead-dialog';
+import { fetchUsers } from "@/app/lib/actions/user-actions";
+import { useEffect, useState } from "react"
+import { fetchLeadStatus } from "@/app/lib/actions/lead-actions"
+import { createLead } from "@/app/lib/actions/lead-actions";
 
 const phoneRegex = /^\(\d{2}\) \d{5}(?:-\d{4})?$/
 const phoneSchema = z
@@ -43,11 +48,18 @@ const formSchema = z.object({
     leadScore: z.number().optional(),
     preferredContactMethod: z.string().optional(),
     tags: z.array(z.string()).optional(),
+    assignedTo: z.string({
+        required_error: "Please select a language.",
+    }),
+    status: z.string(),
 });
 
 
 export default function CreateForm() {
-    const [tags, setTags] = useState<string[]>([]);
+    const [users, setUsers] = useState<SelectOption[]>([]);
+    const [statusOptions, setStatusOptions] = useState<SelectOption[]>([]);
+    const { toast } = useToast();
+    const { showLeadDialog } = useLeadDialog();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -58,17 +70,64 @@ export default function CreateForm() {
             notes: '',
             leadScore: 2.5,
             preferredContactMethod: '',
-            tags: ["cm2v63ipy0000zvwhu7209c9h", "cm2v8x9030002r9g3taypixkh", "cm2v87d9h0000r9g37xceyk3i"],
+            tags: [],
+            assignedTo: undefined,
+            status: undefined,
         }
     });
 
+    const preferredContactMethodOptions: SelectOption[] = [
+        { id: 'email', label: 'Email' },
+        { id: 'phone', label: 'Phone' },
+        { id: 'whatsapp', label: 'WhatsApp' },
+    ];
+
+    useEffect(() => {
+        const fetchUserOptions = async () => {
+            const users = await fetchUsers();
+            const userOptions = users.map((user) => {
+                return { id: user.id, label: user.name }
+            });
+            setUsers(userOptions);
+        }
+
+        const fetchStatusOptions = async () => {
+            const status = await fetchLeadStatus();
+            const options = status.map((st) => {
+                return { id: st.id, label: st.name }
+            });
+            setStatusOptions(options);
+        }
+
+        fetchUserOptions();
+        fetchStatusOptions();
+    }, []);
+
     const onSubmit = async (values: z.infer<typeof formSchema>): Promise<void> => {
-        const { firstName } = values;
+        createLead({
+            firstName: values.firstName!,
+            lastName: values.lastName ?? '',
+            email: values.email!,
+            phone: values.phone!,
+            notes: values.notes ?? '',
+            leadScore: values.leadScore ?? 0,
+            preferredContactMethod: values.preferredContactMethod ?? '',
+            assignedTo: values.assignedTo,
+            status: values.status,
+            estimatedBudget: BigInt(0),
+            lastContactDate: new Date(),
+            nextFollowUpDate: new Date()
+        }, values.tags ?? []);
 
-        console.log(values);
+        toast({
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                    <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+                </pre>
+            ),
+        });
     };
-
-
 
     return (
         <Form {...form}>
@@ -155,7 +214,7 @@ export default function CreateForm() {
                             <FormItem>
                                 <FormLabel>leadScore</FormLabel>
                                 <FormControl>
-                                    <Ratings variant={"yellow"} {...field} />
+                                    <Ratings variant={"yellow"} {...field} changeOnMove={true} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -166,7 +225,11 @@ export default function CreateForm() {
                         control={form.control}
                         name="preferredContactMethod"
                         render={({ field }) => (
-                            <ContactMethodFormItem onChange={field.onChange} value={field.value} />
+                            <FormItem>
+                                <FormLabel>preferredContactMethod</FormLabel>
+                                <SelectStatic options={preferredContactMethodOptions} {...field} />
+                                <FormMessage />
+                            </FormItem>
                         )}
                     />
 
@@ -184,6 +247,34 @@ export default function CreateForm() {
                         )}
                     />
                 </div>
+
+                <FormField
+                    control={form.control}
+                    name="assignedTo"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>assignedTo</FormLabel>
+                            <SelectDynamic options={users} label="user" {...field} />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+
+                <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+
+                        <FormItem className="flex flex-col">
+                            <FormLabel>status</FormLabel>
+
+                            <SelectDynamic label="status" options={statusOptions} showDialog={showLeadDialog} {...field} />
+                            <FormMessage />
+                        </FormItem>
+
+                    )}
+                />
 
                 <Button type="submit">Submit</Button>
             </form>

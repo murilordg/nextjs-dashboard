@@ -12,8 +12,17 @@ pnpm run dev
 
 npx prisma generate
 npx prisma db push
+npx prisma migrate dev
+
+ep-shiny-fog-a40mva8m.us-east-1.aws.neon.tech:5432
 
 npx shadcn@latest add {ompontne}
+```
+
+
+### (React Icons)[https://react-icons.github.io/react-icons/]
+```sh
+npm install react-icons --save
 ```
 
 ## Links

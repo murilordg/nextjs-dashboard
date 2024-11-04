@@ -94,6 +94,11 @@ export type InvoiceForm = {
   status: string;//'pending' | 'paid';
 };
 
+export type UserField = {
+  id: string;
+  name: string;
+}
+
 export type Lead = {
   firstName: string;
   lastName: string;

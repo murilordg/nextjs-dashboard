@@ -115,7 +115,7 @@ model Lead {
     lastName               String
     email                  String
     phone                  String
-    //status  String
+    status                 String
     //leadSource  String
     //company     String
     //position    String
@@ -128,6 +128,7 @@ model Lead {
     preferredContactMethod String
     assignedTo             String
     //campaign    String    
+    tags                   Tag[]    @relation("lead_tags")
 
     createdAt DateTime @default(now()) @map(name: "created_at")
     updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -135,10 +136,31 @@ model Lead {
     @@map(name: "leads")
 }
 
-model Tag {
+model LeadStatus {
     id        String   @id @default(cuid())
     name      String
-    color     String
+    createdAt DateTime @default(now()) @map(name: "created_at")
+    updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+    @@map(name: "lead_status")
+}
+
+// model LeadTag {
+//     id        String   @id @default(cuid())
+//     name      String
+
+//     createdAt DateTime @default(now()) @map(name: "created_at")
+//     updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+//     @@map(name: "lead_tags")
+// }
+
+model Tag {
+    id    String @id @default(cuid())
+    name  String
+    color String
+    lead  Lead[] @relation("lead_tags")
+
     createdAt DateTime @default(now()) @map(name: "created_at")
     updatedAt DateTime @updatedAt @map(name: "updated_at")
 
