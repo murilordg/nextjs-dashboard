@@ -11,7 +11,7 @@
     "@hello-pangea/dnd": "^17.0.0",
     "@heroicons/react": "^2.1.4",
     "@hookform/resolvers": "^3.9.0",
-    "@prisma/client": "5.21.1",
+    "@prisma/client": "5.22.0",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -60,7 +60,7 @@
     "@types/react-input-mask": "^3.0.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
-    "prisma": "^5.21.1"
+    "prisma": "^5.22.0"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -2,11 +2,13 @@
 
 import { useEffect } from 'react';
 
+type ErrorDigest = Error & { digest?: string };
+
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string };
+  error: ErrorDigest;
   reset: () => void;
 }) {
   useEffect(() => {
