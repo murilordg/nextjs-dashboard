@@ -1,9 +1,12 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, DropResult, Droppable, Draggable } from "@hello-pangea/dnd";
 import { FiCalendar, FiMessageSquare, FiPaperclip, FiUser, FiX } from "react-icons/fi";
 import Image from 'next/image';
+
+import { pusherClient } from "@/lib/pusher/client";
+import { Message } from "@/app/ui/kanban/message-list";
 
 export type KanbanBoardTask = {
     id: string;
@@ -94,10 +97,50 @@ const initialData: KanbanBoard = {
 };
 
 const KanbanBoardEx = () => {
-    const placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEBAYGp2SoAAAAASUVORK5CYII=';
+    const placeholderAvatar = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgEBAYGp2SoAAAAASUVORK5CYII=';
     const [data, setData] = useState<KanbanBoard>(initialData);
     const [selectedTask, setSelectedTask] = useState<KanbanBoardTask | null>(null);
     const [selectedUser, setSelectedUser] = useState("all");
+
+    useEffect(() => {
+        const channel = pusherClient
+            .subscribe('private-chat')
+            .bind("evt::test", (channelData: Message) => {
+                const newTask: KanbanBoardTask = {
+                    id: `task-${data.tasks.length + 1}`,
+                    title: "pusherClient message",
+                    description: `pusherClient test message [${channelData.message}]`,
+                    deadline: "2024-11-20",
+                    status: "todo",
+                    assignee: {
+                        name: "Mike Johnson",
+                        avatar: "images.unsplash.com/photo-1500648767791-00dcc994a43e"
+                    },
+                    comments: 0,
+                    attachments: 0
+                };
+                const newTodoColumn = {
+                    ...data.columns.find((col) => col.id === 'todo')!,
+                    taskIds: [
+                        ...data.columns.find((col) => col.id === 'todo')!.taskIds,
+                        newTask.id
+                    ]
+                };
+                const newColumns = data.columns.map((col) => col.id === 'todo' ? newTodoColumn : col);
+
+                const newData = {
+                    tasks: [...data.tasks, newTask],
+                    columns: newColumns,
+                    columnOrder: data.columnOrder
+                };
+
+                setData(newData);
+            });
+
+        return () => {
+            channel.unbind();
+        };
+    }, [data]);
 
     const onDragEnd = (result: DropResult) => {
         const { destination, source, draggableId } = result;
@@ -221,7 +264,7 @@ const KanbanBoardEx = () => {
                                                                         width={32}
                                                                         height={32}
                                                                         placeholder="blur"
-                                                                        blurDataURL={placeholder}
+                                                                        blurDataURL={placeholderAvatar}
                                                                     />
                                                                 </div>
                                                                 <p className="text-sm text-gray-600 mb-3">
@@ -270,7 +313,7 @@ const KanbanBoardEx = () => {
                                     width={40}
                                     height={40}
                                     placeholder="blur"
-                                    blurDataURL={placeholder}
+                                    blurDataURL={placeholderAvatar}
                                 />
                                 <div>
                                     <p className="font-medium">{selectedTask.assignee.name}</p>
